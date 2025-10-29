@@ -1,22 +1,39 @@
 @import "tailwindcss";
 
-/* Base resets and mobile viewport handling */
-html, body, #root {
-  height: 100%;
-  width: 100%;
+/* Base resets - CRITICAL FOR MOBILE */
+* {
+  box-sizing: border-box;
   margin: 0;
   padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  height: 100%;
+  width: 100%;
   overflow: hidden;
+  position: fixed;
+}
+
+body {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  position: fixed;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+#root {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  position: fixed;
 }
 
 /* Handle safe area for devices with bottom bars */
 :root {
   --sab: env(safe-area-inset-bottom, 0px);
-}
-
-/* Ensure body doesn't extend behind system UI */
-body {
-  padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
 /* For fixed/sticky elements at bottom */
@@ -77,6 +94,16 @@ select {
   height: 8px;
 }
 
+/* Utility for hiding scrollbar but keeping functionality */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
 /* Animations */
 @keyframes shake {
   0%, 100% {
@@ -125,23 +152,6 @@ select {
   animation: blob 7s infinite;
 }
 
-/* Animation delay utilities */
-.delay-100 {
-  animation-delay: 100ms;
-}
-
-.delay-200 {
-  animation-delay: 200ms;
-}
-
-.animation-delay-2000 {
-  animation-delay: 2s;
-}
-
-.animation-delay-4000 {
-  animation-delay: 4s;
-}
-
 /* Pulse animation */
 @keyframes pulse {
   0%, 100% {
@@ -162,6 +172,34 @@ select {
   }
 }
 
+/* Loading spinner */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+/* Animation delay utilities */
+.delay-100 {
+  animation-delay: 100ms;
+}
+
+.delay-200 {
+  animation-delay: 200ms;
+}
+
+.animation-delay-2000 {
+  animation-delay: 2s;
+}
+
+.animation-delay-4000 {
+  animation-delay: 4s;
+}
+
 /* Mobile-specific fixes */
 @media screen and (max-width: 768px) {
   /* Prevent rubber band scrolling on iOS */
@@ -179,14 +217,10 @@ select {
   }
 }
 
-/* Touch action for better mobile scrolling */
-* {
-  -webkit-tap-highlight-color: transparent;
-  -webkit-touch-callout: none;
-}
-
+/* Touch action for better mobile interaction */
 button, a {
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  -webkit-touch-callout: none;
   user-select: none;
 }
 
@@ -212,17 +246,6 @@ button, a {
 *:focus-visible {
   outline: 2px solid #8b5cf6;
   outline-offset: 2px;
-}
-
-/* Loading spinner */
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.animate-spin {
-  animation: spin 1s linear infinite;
 }
 
 /* Gradient text */
@@ -251,7 +274,7 @@ button, a {
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
 }
 
-/* Mobile keyboard handling */
+/* Mobile keyboard handling - Use dynamic viewport */
 @supports (height: 100dvh) {
   html, body, #root {
     height: 100dvh;
@@ -277,16 +300,6 @@ button, a {
 
 .z-layer-overlay {
   z-index: 50;
-}
-
-/* Utility for hiding scrollbar but keeping functionality */
-.scrollbar-hide {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-
-.scrollbar-hide::-webkit-scrollbar {
-  display: none;
 }
 
 /* Print styles */
