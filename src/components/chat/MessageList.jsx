@@ -1,6 +1,3 @@
-
-
-// export default MessageList;
 import { useEffect, useRef } from 'react';
 import { formatTime, formatDate } from '../../utils/helper';
 import { useAuth } from '../../context/AuthContext';
@@ -37,7 +34,7 @@ const MessageList = ({ messages, typingUser = null }) => {
     <div 
       className="flex-1 overflow-y-auto p-3 sm:p-4 lg:p-6 bg-gradient-to-br from-slate-50 via-purple-50 to-indigo-50 space-y-3 sm:space-y-4 custom-scrollbar"
       style={{ 
-        paddingBottom: 'calc(1.5rem + env(safe-area-inset-bottom, 0px))' 
+        paddingBottom: '1rem'
       }}
     >
       {Object.entries(groupedMessages).map(([date, msgs]) => (
@@ -54,11 +51,9 @@ const MessageList = ({ messages, typingUser = null }) => {
 
           {/* Messages for this date */}
           {msgs.map((message) => {
-            // FIXED: Better ID comparison logic
             const senderId = message.sender?._id || message.sender;
             const currentUserId = user?.id || user?._id;
             
-            // Convert both to strings and compare
             const isSender = String(senderId) === String(currentUserId);
 
             return (
@@ -81,7 +76,6 @@ const MessageList = ({ messages, typingUser = null }) => {
                       : 'bg-white text-gray-800 rounded-bl-none border border-gray-100'
                   }`}
                 >
-                  {/* Reply To Message */}
                   {message.replyTo && (
                     <div className={`mb-2 p-2.5 rounded-lg ${
                       isSender ? 'bg-purple-600/40' : 'bg-purple-50'
@@ -100,12 +94,10 @@ const MessageList = ({ messages, typingUser = null }) => {
                     </div>
                   )}
 
-                  {/* Message Content */}
                   <p className="break-words text-sm sm:text-base leading-relaxed whitespace-pre-wrap">
                     {message.content}
                   </p>
 
-                  {/* File attachment */}
                   {message.fileUrl && (
                     <div className="mt-2 sm:mt-3">
                       {message.messageType === 'image' ? (
@@ -134,7 +126,6 @@ const MessageList = ({ messages, typingUser = null }) => {
                     </div>
                   )}
 
-                  {/* Time and Read Status */}
                   <div className={`flex items-center justify-end gap-1 mt-1.5 sm:mt-2 ${
                     isSender ? 'text-purple-200' : 'text-gray-500'
                   } text-xs`}>
@@ -156,7 +147,6 @@ const MessageList = ({ messages, typingUser = null }) => {
         </div>
       ))}
 
-      {/* Typing Indicator */}
       {typingUser && (
         <div className="flex items-end gap-1.5 sm:gap-2 animate-fadeIn">
           <Avatar user={typingUser} size="sm" />

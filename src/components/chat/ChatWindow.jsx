@@ -1,6 +1,3 @@
-
-
-// export default ChatWindow;
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useSocket } from '../../context/SocketContext';
@@ -32,17 +29,41 @@ const ChatWindow = ({ selectedContact, isGroup = false, onBack }) => {
   }, [selectedContact]);
 
   useEffect(() => {
-    if (!socket) return;
+    if (!socket) {
+      console.log('Socket not connected');
+      return;
+    }
+
+    console.log('Setting up socket listeners');
 
     const handleNewMessage = (message) => {
-      setMessages(prev => [...prev, message]);
+      console.log('New message received:', message);
+      
+      if (isGroup) {
+        if (message.group === selectedContact?._id) {
+          setMessages(prev => [...prev, message]);
+        }
+      } else {
+        const isRelevant = 
+          (message.sender === selectedContact?._id || message.sender === selectedContact?.id ||
+           message.sender?._id === selectedContact?._id || message.sender?._id === selectedContact?.id) ||
+          (message.recipient === selectedContact?._id || message.recipient === selectedContact?.id);
+        
+        if (isRelevant) {
+          setMessages(prev => [...prev, message]);
+        }
+      }
     };
 
     const handleGroupMessage = (message) => {
-      setMessages(prev => [...prev, message]);
+      console.log('Group message received:', message);
+      if (message.group === selectedContact?._id) {
+        setMessages(prev => [...prev, message]);
+      }
     };
 
     const handleTyping = ({ userId, isTyping }) => {
+      console.log('Typing event:', { userId, isTyping });
       if (isTyping && selectedContact && (userId === selectedContact._id || userId === selectedContact.id)) {
         setTypingUser(selectedContact);
       } else {
@@ -51,7 +72,8 @@ const ChatWindow = ({ selectedContact, isGroup = false, onBack }) => {
     };
 
     const handleGroupTyping = ({ userId, username, isTyping }) => {
-      if (isTyping && userId !== user.id) {
+      console.log('Group typing event:', { userId, username, isTyping });
+      if (isTyping && userId !== (user?.id || user?._id)) {
         setTypingUser({ username });
       } else {
         setTypingUser(null);
@@ -64,12 +86,13 @@ const ChatWindow = ({ selectedContact, isGroup = false, onBack }) => {
     socket.on('group:typing:user', handleGroupTyping);
 
     return () => {
+      console.log('Cleaning up socket listeners');
       socket.off('message:receive', handleNewMessage);
       socket.off('group:message:receive', handleGroupMessage);
       socket.off('typing:user', handleTyping);
       socket.off('group:typing:user', handleGroupTyping);
     };
-  }, [socket, selectedContact, user]);
+  }, [socket, selectedContact, isGroup, user]);
 
   const loadMessages = async () => {
     if (!selectedContact || !user) return;
@@ -96,8 +119,10 @@ const ChatWindow = ({ selectedContact, isGroup = false, onBack }) => {
   const handleSendMessage = (content, replyToId = null) => {
     if (!selectedContact || !user) return;
 
+    const currentUserId = user?.id || user?._id;
+
     const messageData = {
-      sender: user.id || user._id,
+      sender: currentUserId,
       content,
       messageType: 'text',
       replyTo: replyToId,
@@ -190,7 +215,13 @@ const ChatWindow = ({ selectedContact, isGroup = false, onBack }) => {
   }
 
   return (
-    <div className="flex-1 flex flex-col bg-white h-full overflow-hidden">
+    <div 
+      className="flex-1 flex flex-col bg-white overflow-hidden"
+      style={{
+        height: '100%',
+        paddingBottom: 'env(safe-area-inset-bottom, 0px)'
+      }}
+    >
       <ChatHeader 
         contact={selectedContact} 
         isGroup={isGroup}
