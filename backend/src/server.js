@@ -43,7 +43,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 // Request logging
 app.use((req, res, next) => {
-  console.log(`${req.method} ${req.path}`);
+  // console.log(`${req.method} ${req.path}`);
   next();
 });
 

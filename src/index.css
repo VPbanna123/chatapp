@@ -26,3 +26,27 @@
 .delay-200 {
   animation-delay: 200ms;
 }
+/* Handle safe area for devices with bottom bars */
+:root {
+  --sab: env(safe-area-inset-bottom, 0px);
+}
+
+/* Ensure body doesn't extend behind system UI */
+body {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* For fixed/sticky elements at bottom */
+.safe-bottom {
+  padding-bottom: calc(0.75rem + env(safe-area-inset-bottom, 0px));
+}
+
+.bottom-nav-safe {
+  bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* Prevent scrolling issues */
+html, body, #root {
+  height: 100%;
+  overflow: hidden;
+}
